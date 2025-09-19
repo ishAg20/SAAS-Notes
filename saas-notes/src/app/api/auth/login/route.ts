@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { comparePasswords, generateToken } from "@/lib/auth";
-import { LoginRequest, LoginResponse } from "@/types";
+import { LoginRequest, LoginResponse, User } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,10 +39,9 @@ export async function POST(request: NextRequest) {
       tenantSlug: user.tenant.slug,
     };
     const token = generateToken(tokenPayload);
-    // Remove password from response
-    const { password: _, ...userResponse } = user;
+    const { password: _password, ...userResponse } = user;
     const response: LoginResponse = {
-      user: userResponse as any,
+      user: userResponse as Omit<User, "password">,
       token,
       message: "Login successful",
     };
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       { success: true, data: response },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 }

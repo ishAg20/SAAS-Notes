@@ -9,7 +9,6 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   const params = await context.params;
-  const noteId = params.id;
   const { payload } = await authenticateRequest(request);
   const note = await prisma.note.findFirst({
     where: { id: params.id, tenantId: payload.tenantId },
@@ -29,7 +28,6 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   const params = await context.params;
-  const noteId = params.id;
   const { payload } = await authenticateRequest(request);
   const body: UpdateNoteRequest = await request.json();
   const existingNote = await prisma.note.findFirst({
@@ -54,7 +52,6 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   const params = await context.params;
-  const noteId = params.id;
   const { payload } = await authenticateRequest(request);
   const existingNote = await prisma.note.findFirst({
     where: { id: params.id, tenantId: payload.tenantId },

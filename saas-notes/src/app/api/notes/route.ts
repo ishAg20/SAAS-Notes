@@ -13,13 +13,15 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ success: true, data: notes }, { status: 200 });
-  } catch (error) {
+  } catch {
+    // 'error' parameter removed because it's unused
     return NextResponse.json(
       { success: false, error: "Failed to fetch notes" },
       { status: 500 }
     );
   }
 }
+
 // Create note
 export async function POST(request: NextRequest) {
   try {
@@ -52,7 +54,8 @@ export async function POST(request: NextRequest) {
       include: { user: { select: { email: true } } },
     });
     return NextResponse.json({ success: true, data: note }, { status: 201 });
-  } catch (error) {
+  } catch {
+    // same fix here: remove 'error' parameter
     return NextResponse.json(
       { success: false, error: "Failed to create note" },
       { status: 500 }

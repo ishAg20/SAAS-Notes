@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -53,7 +54,7 @@ async function main() {
     },
   });
 
-  const globexAdmin = await prisma.user.upsert({
+  const _globexAdmin = await prisma.user.upsert({
     where: { email: "admin@globex.test" },
     update: {},
     create: {

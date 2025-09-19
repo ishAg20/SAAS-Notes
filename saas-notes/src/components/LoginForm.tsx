@@ -9,7 +9,7 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -24,7 +24,9 @@ export default function LoginForm() {
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("user", JSON.stringify(data.data.user));
         router.push("/dashboard");
-      } else setError(data.error || "Login failed");
+      } else {
+        setError(data.error || "Login failed");
+      }
     } catch {
       setError("Network error");
     } finally {

@@ -35,20 +35,25 @@ export async function POST(
       { success: true, data: updatedTenant, message: "Upgraded." },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (
-      error.message === "No token provided" ||
-      error.message === "Invalid token"
-    )
-      return NextResponse.json(
-        { success: false, error: "Auth required" },
-        { status: 401 }
-      );
-    if (error.message === "Insufficient permissions")
-      return NextResponse.json(
-        { success: false, error: "Admin only" },
-        { status: 403 }
-      );
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (error as { message?: unknown }).message === "string"
+    ) {
+      const message = (error as { message: string }).message;
+      if (message === "No token provided" || message === "Invalid token")
+        return NextResponse.json(
+          { success: false, error: "Auth required" },
+          { status: 401 }
+        );
+      if (message === "Insufficient permissions")
+        return NextResponse.json(
+          { success: false, error: "Admin only" },
+          { status: 403 }
+        );
+    }
     return NextResponse.json(
       { success: false, error: "Upgrade failed" },
       { status: 500 }

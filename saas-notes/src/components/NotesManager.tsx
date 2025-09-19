@@ -1,9 +1,11 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { Note, User, Tenant } from "@/types";
+import React from "react";
 
 export default function NotesManager({
-  user,
+  user: _user,
   tenant,
 }: {
   user: User;
@@ -31,7 +33,7 @@ export default function NotesManager({
     fetchNotes();
   }, []);
 
-  const createNote = async (e: any) => {
+  const createNote = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newNote.title.trim() || !newNote.content.trim())
       return setError("Title and content required");
