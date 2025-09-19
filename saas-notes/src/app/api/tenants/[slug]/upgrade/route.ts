@@ -2,35 +2,39 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { authenticateRequest, requireRole } from "@/lib/auth";
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function POST(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const slug = url.pathname.split("/")[3];
+
     const { payload } = await authenticateRequest(request);
     requireRole(["ADMIN"])(payload);
-    if (payload.tenantSlug !== params.slug)
+
+    if (payload.tenantSlug !== slug)
       return NextResponse.json(
         { success: false, error: "Access denied" },
         { status: 403 }
       );
-    const tenant = await prisma.tenant.findUnique({
-      where: { slug: params.slug },
-    });
+
+    const tenant = await prisma.tenant.findUnique({ where: { slug } });
+
     if (!tenant)
       return NextResponse.json(
         { success: false, error: "Tenant not found" },
         { status: 404 }
       );
+
     if (tenant.subscription === "PRO")
       return NextResponse.json(
         { success: false, error: "Already Pro" },
         { status: 400 }
       );
+
     const updatedTenant = await prisma.tenant.update({
       where: { id: tenant.id },
       data: { subscription: "PRO" },
     });
+
     return NextResponse.json(
       { success: true, data: updatedTenant, message: "Upgraded." },
       { status: 200 }
